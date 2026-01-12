@@ -48,8 +48,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),  # ← 環境変数を明示
         conn_max_age=600,
-        ssl_require=False,  # Renderでは後でTrueにする
+        ssl_require=True,  # Render本番ではTrue推奨
     )
 }
 
