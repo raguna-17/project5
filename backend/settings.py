@@ -47,13 +47,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
+
 DATABASES = {
     "default": dj_database_url.config(
         default=DATABASE_URL or "sqlite:///db.sqlite3",
         conn_max_age=600,
-        ssl_require=bool(DATABASE_URL)  # ← DATABASE_URL がある時だけ SSL
+        ssl_require=True if DATABASE_URL and "onrender.com" in DATABASE_URL else False
     )
 }
+
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
