@@ -46,14 +46,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+DATABASE_URL = os.environ.get("DATABASE_URL")
 DATABASES = {
     "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3"),
+        default=DATABASE_URL or "sqlite:///db.sqlite3",
         conn_max_age=600,
-        ssl_require=os.environ.get("DATABASE_SSL", "True") == "True"
+        ssl_require=bool(DATABASE_URL)  # ← DATABASE_URL がある時だけ SSL
     )
 }
-
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
