@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'tasks',
+    "corsheaders"
 ]
 
 MIDDLEWARE = [
@@ -27,7 +28,9 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    "corsheaders.middleware.CorsMiddleware"
 ]
+
 
 ROOT_URLCONF = 'backend.urls'
 
