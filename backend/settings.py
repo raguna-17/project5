@@ -46,24 +46,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-if os.environ.get("RENDER") == "true":
-    # Render 本番用
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=os.environ.get("DATABASE_URL"),
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
-else:
-    # ローカル開発用
-    DATABASES = {
-        "default": dj_database_url.config(
-            default="postgres://user:password@localhost:5432/project5_db",
-            conn_max_age=600,
-            ssl_require=False  # ローカルでは SSL 不要
-        )
-    }
+DATABASES = {
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True  # Render 本番では必須
+    )
+}
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
