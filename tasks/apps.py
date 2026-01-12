@@ -7,5 +7,14 @@ class TasksConfig(AppConfig):
     def ready(self):
         from django.contrib.auth import get_user_model
         User = get_user_model()
-        if not User.objects.filter(username="raguna").exists():
-            User.objects.create_superuser("raguna", "pasupoto17@gmail.com", "kaibasensei")
+
+        # 既に存在するなら何もしない
+        if User.objects.filter(username="raguna").exists():
+            return
+
+        # 一度だけ作る
+        User.objects.create_superuser(
+            username="raguna",
+            email="pasupoto17@gmail.com",
+            password="kaibasensei"
+        )
