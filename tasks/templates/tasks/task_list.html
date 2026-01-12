@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Task SPA</title>
+</head>
+
+<body>
+    <h1>Task App</h1>
+
+    <!-- ===== Login ===== -->
+    <div id="login-area">
+        <input id="username" placeholder="username">
+        <input id="password" type="password" placeholder="password">
+        <button onclick="login()">Login</button>
+        <p id="login-msg"></p>
+    </div>
+
+    <!-- ===== App ===== -->
+    <div id="app-area" style="display:none;">
+        <button onclick="logout()">Logout</button>
+
+        <h2>New Task</h2>
+        <input id="new-task" placeholder="task title">
+        <button onclick="createTask()">Add</button>
+
+        <h2>Tasks</h2>
+        <ul id="task-list"></ul>
+    </div>
+
+    <script>
+        const API_LOGIN = "/api/token/";
+        const API_TASKS = "/tasks/api/tasks/";
+
+        function getAccessToken() {
+            return localStorage.getItem("access");
+        }
+
+        function setTokens(data) {
+            localStorage.setItem("access", data.access);
+            localStorage.setItem("refresh", data.refresh);
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        // ---------- LOGIN ----------
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const res = await fetch(API_LOGIN, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (!res.ok) {
+                document.getElementById("login-msg").innerText = "Login failed";
+                return;
+            }
+
+            const data = await res.json();
+            setTokens(data);
+            showApp();
+            loadTasks();
+        }
+
+        // ---------- FETCH WRAPPER ----------
+        async function authFetch(url, options = {}) {
+            const token = getAccessToken();
+            options.headers = options.headers || {};
+            options.headers["Authorization"] = "Bearer " + token;
+
+            let res = await fetch(url, options);
+
+            // access expired → refresh
+            if (res.status === 401) {
+                const refreshed = await refreshToken();
+                if (refreshed) {
+                    options.headers["Authorization"] = "Bearer " + getAccessToken();
+                    res = await fetch(url, options);
+                }
+            }
+            return res;
+        }
+
+        async function refreshToken() {
+            const refresh = localStorage.getItem("refresh");
+            if (!refresh) return false;
+
+            const res = await fetch("/api/token/refresh/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ refresh })
+            });
+
+            if (!res.ok) return false;
+            const data = await res.json();
+            localStorage.setItem("access", data.access);
+            return true;
+        }
+
+        // ---------- TASK CRUD ----------
+        async function loadTasks() {
+            const res = await authFetch(API_TASKS);
+            if (!res.ok) return;
+
+            const tasks = await res.json();
+            const list = document.getElementById("task-list");
+            list.innerHTML = "";
+
+            tasks.forEach(t => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+      ${t.completed ? "✅" : "⬜"} ${t.title}
+      <button onclick="toggleTask(${t.id})">Toggle</button>
+      <button onclick="deleteTask(${t.id})">Delete</button>
+    `;
+                list.appendChild(li);
+            });
+        }
+
+        async function createTask() {
+            const title = document.getElementById("new-task").value;
+            if (!title) return;
+
+            await authFetch(API_TASKS, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title })
+            });
+
+            document.getElementById("new-task").value = "";
+            loadTasks();
+        }
+
+        async function toggleTask(id) {
+            await authFetch(`${API_TASKS}${id}/toggle/`, { method: "PATCH" });
+            loadTasks();
+        }
+
+        async function deleteTask(id) {
+            await authFetch(`${API_TASKS}${id}/`, { method: "DELETE" });
+            loadTasks();
+        }
+
+        // ---------- INIT ----------
+        function showApp() {
+            document.getElementById("login-area").style.display = "none";
+            document.getElementById("app-area").style.display = "block";
+        }
+
+        if (getAccessToken()) {
+            showApp();
+            loadTasks();
+        }
+    </script>
+</body>
+
+</html>
