@@ -4,9 +4,15 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-fallback-key")
-DEBUG = os.environ.get("DEBUG", "False") == "True"
-ALLOWED_HOSTS = ["project5-yuhx.onrender.com"]
+SECRET_KEY = os.environ["SECRET_KEY"]
+
+DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1")
+
+ALLOWED_HOSTS = [
+    "project5-yuhx.onrender.com",
+    "localhost",
+    "127.0.0.1"
+]
 
 
 INSTALLED_APPS = [
@@ -48,13 +54,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 DATABASES = {
     "default": dj_database_url.config(
-        default=DATABASE_URL or "sqlite:///db.sqlite3",
+        default=DATABASE_URL,
         conn_max_age=600,
-        ssl_require=True if DATABASE_URL and "onrender.com" in DATABASE_URL else False
+        ssl_require=not DEBUG
     )
 }
 
