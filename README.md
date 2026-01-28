@@ -1,11 +1,18 @@
 # Todo Project 5
 
-Docker 環境で開発・本番差異を吸収し、JWT 認証APIとWeb画面を両立したタスク管理アプリです。
-Render への本番デプロイを前提に設計しています。  
-Docker による環境統一と、JWT 認証を用いた API 提供を行っています。  
-開発環境と本番環境(Render)の両立を前提に設計しています。
+JWT 認証APIとWeb画面を併用し、Docker 環境で開発・本番差異を吸収したタスク管理アプリです。  
+Render への本番デプロイを前提に設計しています。
 
 ---
+
+## デモ
+
+https://project5-yuhx.onrender.com
+
+**ログイン情報（デモ用）**  
+ユーザー名: raguna  
+パスワード: kaibasensei
+
 
 ## 主な機能
 
