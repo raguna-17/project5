@@ -68,37 +68,7 @@ https://project5-yuhx.onrender.com
 
 ---
 
-## 環境構築
 
-### 1. リポジトリをクローン
-
-git clone <repository-url>
-cd todo_project5
-
-shell
-コードをコピーする
-
-### 2. 環境変数ファイル作成
-
-cp .env.example .env
-
-`.env` には SECRET_KEY / DEBUG / DATABASE_URL を設定します。
-`.env.example` に記載のフォーマットを参考にしてください。
-
-### 3. Docker ビルド & 起動
-
-docker-compose up --build
-
-コードをコピーする
-
-ブラウザで以下にアクセス
-
-http://localhost:8000
-
-yaml
-コードをコピーする
-
----
 
 ## JWT 認証エンドポイント
 
